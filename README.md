@@ -44,3 +44,29 @@ api_key = 'YOUR_API_KEY'
 search_query = 'hotel pool area'
 images = get_google_images(api_key, search_query)
 print(f"Collected {len(images)} images from Google")
+
+### Synthetic Data Generation
+To augment the dataset, synthetic images were generated using the Stable Diffuser model from OpenAI and DALL-E. These models helped create diverse scenarios of pool chairs and human interactions, enriching the dataset. A total of 30 synthetic images were generated (10 from each model).
+
+```python
+from diffusers import StableDiffusionPipeline
+import torch
+
+def generate_synthetic_images(prompt, num_images):
+    model_id = "CompVis/stable-diffusion-v1-4"
+    pipe = StableDiffusionPipeline.from_pretrained(model_id)
+    pipe = pipe.to("cuda")
+
+    images = []
+    for _ in range(num_images):
+        with torch.autocast("cuda"):
+            image = pipe(prompt).images[0]
+        images.append(image)
+    
+    return images
+
+# Example usage
+prompt = "A hotel pool area with lounge chairs"
+synthetic_images = generate_synthetic_images(prompt, num_images=10)
+print(f"Generated {len(synthetic_images)} synthetic images using Stable Diffusion")
+```
